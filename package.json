@@ -1,0 +1,53 @@
+{
+  "name": "vercel-mern-skeleton",
+  "private": "true",
+  "description": "A skeleton for a React/Express/MongoDB web app that is deployable to Vercel!",
+  "main": "api/index.ts",
+  "scripts": {
+    "start": "node build/api/index.js",
+    "dev:server": "NODE_ENV=development ts-node-dev api/index.ts",
+    "dev:client": "cd client && npm start",
+    "dev": "(npm run dev:server) & (npm run dev:client)",
+    "build": "tsc && cd client && npm run build",
+    "lint": "eslint api server"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "author": "Adam Janicki",
+  "dependencies": {
+    "connect-mongo": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^4.21.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-session": "^1.18.2",
+    "mongoose": "^8.16.4",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/express-session": "^1.18.2",
+    "@types/morgan": "^1.9.10",
+    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "eslint": "^9.31.0",
+    "prettier": "^3.6.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": 2024,
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint"
+    ]
+  }
+}

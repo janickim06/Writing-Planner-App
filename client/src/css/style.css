@@ -1,0 +1,15 @@
+body {
+  overflow-x: hidden;
+}
+
+p {
+  line-height: 1.5;
+}
+
+.page-title-text {
+  font-size: calc(28px + 1vw);
+}
+
+.bordering {
+  border: 2px solid red;
+}

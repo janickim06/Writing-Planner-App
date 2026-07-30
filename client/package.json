@@ -1,0 +1,32 @@
+{
+  "name": "client",
+  "private": "true",
+  "type": "module",
+  "dependencies": {
+    "@adamjanicki/store": "^1.0.0",
+    "@adamjanicki/ui": "latest",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "scripts": {
+    "start": "vite",
+    "build": "tsc --noEmit && eslint src --max-warnings=0 && vite build",
+    "lint": "eslint src --fix && prettier --write \"src/**/*.{ts,tsx,json,css,scss,md}\""
+  },
+  "devDependencies": {
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.51.0",
+    "vite": "^7.3.0",
+    "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-svgr": "^4.5.0"
+  }
+}
