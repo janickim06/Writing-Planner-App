@@ -4,7 +4,7 @@
   "type": "module",
   "dependencies": {
     "@adamjanicki/store": "^1.0.0",
-    "@adamjanicki/ui": "latest",
+    "@adamjanicki/ui": "^1.9.5",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },

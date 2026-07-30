@@ -1,5 +1,5 @@
 {
-  "name": "vercel-mern-skeleton",
+  "name": "writing-planner-app",
   "private": "true",
   "description": "A skeleton for a React/Express/MongoDB web app that is deployable to Vercel!",
   "main": "api/index.ts",

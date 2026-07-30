@@ -12,7 +12,7 @@ export default function Footer() {
       }}
     >
       <ui.p vfx={{ fontWeight: 5 }}>
-        Est. 2022 Built from scratch by{" "}
+        Est. 2026 Built from scratch by{" "}
         <Link to="https://adamjanicki.xyz" newTab>
           Adam
         </Link>
