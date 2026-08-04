@@ -1,6 +1,24 @@
 import { NextFunction, Response, Request } from "express";
+import "express-session";
 import { Types } from "mongoose";
-import { BAD_REQUEST } from "./util";
+import { BAD_REQUEST, UNAUTHORIZED } from "./util";
+
+declare module "express-session" {
+  interface SessionData {
+    userId?: string;
+  }
+}
+
+export const requireAuth = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.session.userId) {
+    return res.status(UNAUTHORIZED).json({ error: "Not logged in" });
+  }
+  next();
+};
 
 type RequestInfo = "body" | "params" | "query";
 

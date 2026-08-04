@@ -8,9 +8,11 @@ import {
   UnstyledLink,
 } from "@adamjanicki/ui";
 import { type ReactNode, useState } from "react";
+import useUser from "src/hooks/useUser";
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
+  const [{ user, status }, { logout }] = useUser();
 
   return (
     <ui.nav vfx={{ paddingY: "s", paddingX: "l" }}>
@@ -43,6 +45,22 @@ export default function Nav() {
         <Navlink to="/api-test/" onClick={() => setOpen(false)}>
           API Test
         </Navlink>
+        {status === "authenticated" && user ? (
+          <ui.button
+            vfx={{ width: "full", fontWeight: 5, color: "default" }}
+            style={{ whiteSpace: "nowrap" }}
+            onClick={() => {
+              setOpen(false);
+              logout();
+            }}
+          >
+            Log out ({user.name})
+          </ui.button>
+        ) : (
+          <Navlink to="/login/" onClick={() => setOpen(false)}>
+            Log in
+          </Navlink>
+        )}
       </Box>
     </ui.nav>
   );

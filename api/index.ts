@@ -10,6 +10,7 @@ import MongoStore from "connect-mongo";
 import ExpressMongoSanitize from "express-mongo-sanitize";
 import { OK, SERVER_ERROR } from "../server/util";
 import generalRouter from "../server/router";
+import authRouter from "../server/authRouter";
 
 dotenv.config({ quiet: true });
 
@@ -17,6 +18,9 @@ dotenv.config({ quiet: true });
 const MONGO_URL = process.env.MONGO_SRV;
 if (!MONGO_URL) {
   throw new Error("MONGO_SRV is not defined in .env file!");
+}
+if (!process.env.GOOGLE_CLIENT_ID) {
+  throw new Error("GOOGLE_CLIENT_ID is not defined in .env file!");
 }
 
 // MongoDB connection using Mongoose
@@ -55,6 +59,8 @@ app.use(
 );
 
 const API_PREFIX = "/api";
+// Mounted before generalRouter so its "/*" catch-all doesn't shadow these routes
+app.use(`${API_PREFIX}/auth`, authRouter);
 // Add your routers here:
 app.use(API_PREFIX, generalRouter);
 

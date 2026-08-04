@@ -5,6 +5,7 @@ import Nav from "src/components/Nav";
 import About from "src/pages/About";
 import ApiTest from "src/pages/ApiTest";
 import Home from "src/pages/Home";
+import Login from "src/pages/Login";
 import NotFound from "src/pages/NotFound";
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about/" element={<About />} />
         <Route path="/api-test/" element={<ApiTest />} />
+        <Route path="/login/" element={<Login />} />
       </Routes>
       <Alert />
       <Footer />
