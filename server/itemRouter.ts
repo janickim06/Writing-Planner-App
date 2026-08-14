@@ -55,20 +55,10 @@ router.post("/", isInfoSupplied("body", "name", "type"), async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const { parentId } = req.query;
-  let parentFilter: Types.ObjectId | null = null;
-  if (parentId !== undefined) {
-    if (typeof parentId !== "string" || !Types.ObjectId.isValid(parentId)) {
-      return res
-        .status(BAD_REQUEST)
-        .json({ error: "parentId is not a valid Mongo ID" });
-    }
-    parentFilter = new Types.ObjectId(parentId);
-  }
-  const items = await Item.find({
-    ownerId: req.session.userId,
-    parentId: parentFilter,
-  }).sort({ type: 1, name: 1 });
+  const items = await Item.find({ ownerId: req.session.userId }).sort({
+    type: 1,
+    name: 1,
+  });
   return res.status(OK).json({ data: items });
 });
 

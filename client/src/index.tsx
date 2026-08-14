@@ -3,6 +3,7 @@ import "@adamjanicki/ui/style.css";
 // All your styles go here!
 import "src/css/style.css";
 import "src/css/media.css";
+import "src/css/app.css";
 
 import React from "react";
 import ReactDOM from "react-dom/client";

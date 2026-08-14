@@ -9,3 +9,16 @@ export type User = {
   name: string;
   avatarUrl?: string;
 };
+
+export type ItemType = "folder" | "text";
+
+export type Item = {
+  _id: string;
+  ownerId: string;
+  type: ItemType;
+  name: string;
+  parentId: string | null;
+  content?: string;
+  createdAt: string;
+  updatedAt: string;
+};
