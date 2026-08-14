@@ -1,7 +1,8 @@
 import { NextFunction, Response, Request } from "express";
 import "express-session";
 import { Types } from "mongoose";
-import { BAD_REQUEST, UNAUTHORIZED } from "./util";
+import Item from "./models/Item";
+import { BAD_REQUEST, NOT_FOUND, UNAUTHORIZED } from "./util";
 
 declare module "express-session" {
   interface SessionData {
@@ -67,3 +68,16 @@ export const isInfoValidId =
     }
     next();
   };
+
+export const loadOwnedItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const item = await Item.findById(req.params.id);
+  if (!item || item.ownerId.toString() !== req.session.userId) {
+    return res.status(NOT_FOUND).json({ error: "Item not found" });
+  }
+  res.locals.item = item;
+  next();
+};

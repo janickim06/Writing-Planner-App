@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import session from "express-session";
 import http from "http";
 import mongoose from "mongoose";
@@ -11,6 +11,7 @@ import ExpressMongoSanitize from "express-mongo-sanitize";
 import { OK, SERVER_ERROR } from "../server/util";
 import generalRouter from "../server/router";
 import authRouter from "../server/authRouter";
+import itemRouter from "../server/itemRouter";
 
 dotenv.config({ quiet: true });
 
@@ -61,6 +62,7 @@ app.use(
 const API_PREFIX = "/api";
 // Mounted before generalRouter so its "/*" catch-all doesn't shadow these routes
 app.use(`${API_PREFIX}/auth`, authRouter);
+app.use(`${API_PREFIX}/items`, itemRouter);
 // Add your routers here:
 app.use(API_PREFIX, generalRouter);
 
@@ -75,7 +77,7 @@ app.get("*", (req: Request, res: Response) => {
   res.status(OK).sendFile(indexDir);
 });
 
-app.use((err: Error, req: Request, res: Response) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(SERVER_ERROR).send({ error: "Server error" });
 });
