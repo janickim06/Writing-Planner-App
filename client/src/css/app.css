@@ -150,21 +150,41 @@ body {
   white-space: nowrap;
 }
 
-.tree-row-delete {
+.tree-row-action {
+  display: flex;
+  align-items: center;
   opacity: 0;
   flex-shrink: 0;
   border: none;
   background: none;
   cursor: pointer;
-  padding: 0 8px;
+  padding: 0 6px;
   color: var(--ink-muted);
   font-size: 1rem;
   line-height: 1;
 }
 
-.tree-row:hover .tree-row-delete,
-.tree-row-delete:focus-visible {
+.tree-row-action:hover {
+  color: var(--accent);
+}
+
+.tree-row:hover .tree-row-action,
+.tree-row-action:focus-visible {
   opacity: 1;
+}
+
+.tree-rename-input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 5px 8px;
+  border: 1px solid var(--accent);
+  border-radius: var(--aui-radius-subtle);
+  background-color: var(--paper);
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--ink);
+  outline: none;
 }
 
 .tree-empty {

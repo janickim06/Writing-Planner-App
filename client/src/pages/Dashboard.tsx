@@ -67,7 +67,7 @@ export default function Dashboard() {
   return (
     <div className="app-shell">
       <aside className="app-sidebar">
-        <div className="sidebar-header">Writing Planner</div>
+        <div className="sidebar-header">Orchard</div>
         <div className="sidebar-actions">
           <Button size="small" onClick={() => handleCreate("text")}>
             <Icon size="s" icon={plus} /> File

@@ -2,10 +2,11 @@ import { Icon } from "@adamjanicki/ui";
 import {
   chevronDown,
   chevronRight,
+  edit as editIcon,
   file as fileIcon,
   folder as folderIcon,
 } from "@adamjanicki/ui/icons";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import useAlert from "src/hooks/useAlert";
 import useItems from "src/hooks/useItems";
 import type { Item } from "src/types";
@@ -30,6 +31,9 @@ export default function FileTree({
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [draftName, setDraftName] = useState("");
+  const renameHandled = useRef(false);
   const [, setAlert] = useAlert();
 
   const childrenOf = (parentId: string | null) =>
@@ -90,6 +94,27 @@ export default function FileTree({
     },
   });
 
+  const startRename = (item: Item) => {
+    renameHandled.current = false;
+    setDraftName(item.name);
+    setRenamingId(item._id);
+  };
+
+  const commitRename = async (item: Item) => {
+    if (renameHandled.current) return;
+    renameHandled.current = true;
+    const next = draftName.trim();
+    setRenamingId(null);
+    if (!next || next === item.name) return;
+    const updated = await updateItem(item._id, { name: next });
+    if (!updated) setAlert({ type: "error", message: "Couldn't rename that." });
+  };
+
+  const cancelRename = () => {
+    renameHandled.current = true;
+    setRenamingId(null);
+  };
+
   const handleDelete = async (item: Item) => {
     if (!window.confirm(`Delete "${item.name}"?`)) return;
     const ok = await deleteItem(item._id);
@@ -110,6 +135,7 @@ export default function FileTree({
   const renderRow = (item: Item, depth: number) => {
     const isFolder = item.type === "folder";
     const isOpen = Boolean(expanded[item._id]);
+    const isRenaming = item._id === renamingId;
     const classes = ["tree-row"];
     if (item._id === activeItemId) classes.push("active");
     if (isFolder && item._id === selectedFolderId) classes.push("selected");
@@ -120,7 +146,8 @@ export default function FileTree({
       <div key={item._id}>
         <div
           className={classes.join(" ")}
-          draggable
+          // Dragging would otherwise hijack text selection inside the input
+          draggable={!isRenaming}
           onDragStart={(e) => {
             e.dataTransfer.effectAllowed = "move";
             e.dataTransfer.setData("text/plain", item._id);
@@ -132,35 +159,66 @@ export default function FileTree({
           }}
           {...dropProps(item._id, isFolder)}
         >
-          <button
-            className="tree-row-main"
-            style={{ paddingLeft: 8 + depth * 14 }}
-            onClick={() => {
-              if (isFolder) {
-                setExpanded((prev) => ({
-                  ...prev,
-                  [item._id]: !prev[item._id],
-                }));
-                onSelectFolder(item._id === selectedFolderId ? null : item._id);
-              } else {
-                onOpenFile(item._id);
-              }
-            }}
-          >
-            <Icon
-              size="s"
-              icon={isFolder ? (isOpen ? chevronDown : chevronRight) : fileIcon}
+          {isRenaming ? (
+            // Swaps in place of the button: an input can't be nested inside one
+            <input
+              className="tree-rename-input"
+              style={{ paddingLeft: 8 + depth * 14 }}
+              value={draftName}
+              autoFocus
+              aria-label={`Rename ${item.name}`}
+              onChange={(e) => setDraftName(e.target.value)}
+              onFocus={(e) => e.target.select()}
+              onBlur={() => commitRename(item)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitRename(item);
+                if (e.key === "Escape") cancelRename();
+              }}
             />
-            {isFolder && <Icon size="s" icon={folderIcon} />}
-            <span className="tree-row-name">{item.name}</span>
-          </button>
-          <button
-            className="tree-row-delete"
-            aria-label={`Delete ${item.name}`}
-            onClick={() => handleDelete(item)}
-          >
-            ×
-          </button>
+          ) : (
+            <>
+              <button
+                className="tree-row-main"
+                style={{ paddingLeft: 8 + depth * 14 }}
+                onClick={() => {
+                  if (isFolder) {
+                    setExpanded((prev) => ({
+                      ...prev,
+                      [item._id]: !prev[item._id],
+                    }));
+                    onSelectFolder(
+                      item._id === selectedFolderId ? null : item._id
+                    );
+                  } else {
+                    onOpenFile(item._id);
+                  }
+                }}
+              >
+                <Icon
+                  size="s"
+                  icon={
+                    isFolder ? (isOpen ? chevronDown : chevronRight) : fileIcon
+                  }
+                />
+                {isFolder && <Icon size="s" icon={folderIcon} />}
+                <span className="tree-row-name">{item.name}</span>
+              </button>
+              <button
+                className="tree-row-action"
+                aria-label={`Rename ${item.name}`}
+                onClick={() => startRename(item)}
+              >
+                <Icon size="s" icon={editIcon} />
+              </button>
+              <button
+                className="tree-row-action"
+                aria-label={`Delete ${item.name}`}
+                onClick={() => handleDelete(item)}
+              >
+                ×
+              </button>
+            </>
+          )}
         </div>
         {isFolder &&
           isOpen &&
