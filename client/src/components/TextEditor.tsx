@@ -49,7 +49,7 @@ export default function TextEditor({ item, onDirtyChange }: Props) {
   }, [dirty, saving, save]);
 
   useEffect(() => {
-    document.title = `${savedName} — Writing Planner`;
+    document.title = `${savedName} — Orchard`;
   }, [savedName]);
 
   return (

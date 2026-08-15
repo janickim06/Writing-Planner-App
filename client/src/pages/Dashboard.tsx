@@ -14,7 +14,7 @@ import useItems from "src/hooks/useItems";
 import useUser from "src/hooks/useUser";
 import type { ItemType } from "src/types";
 
-const LAST_ITEM_KEY = "writing-planner:lastItemId";
+const LAST_ITEM_KEY = "orchard:lastItemId";
 
 export default function Dashboard() {
   const { itemId } = usePathParams();
@@ -53,8 +53,6 @@ export default function Dashboard() {
       await createItem(name, "folder", selectedFolderId);
       return;
     }
-    // Text files are created untitled and opened straight away — the name is
-    // editable in the editor header, so there's no prompt to sit through.
     const created = await createItem("Untitled", "text", selectedFolderId);
     if (created) guardedNavigate(`/app/${created._id}`);
   };
@@ -114,8 +112,6 @@ export default function Dashboard() {
     </div>
   );
 
-  // Plain function, not a nested component: rendering <MainPane /> would create
-  // a new component type each render and remount the editor mid-keystroke.
   function renderMain() {
     if (loading && !items.length) {
       return (

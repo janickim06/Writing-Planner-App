@@ -35,7 +35,10 @@ export default function useItems() {
   );
 
   const updateItem = useCallback(
-    async (id: string, updates: Partial<Pick<Item, "name" | "content">>) => {
+    async (
+      id: string,
+      updates: Partial<Pick<Item, "name" | "content" | "parentId">>
+    ) => {
       const { data, error } = await patch(`/api/items/${id}`, updates);
       if (error || !data) return undefined;
       await refresh();

@@ -31,6 +31,16 @@ async function resolveParentId(ownerId: string, parentId: unknown) {
   return { parentId: parent._id };
 }
 
+async function createsCycle(itemId: string, newParentId: Types.ObjectId | null) {
+  let cursor = newParentId;
+  while (cursor) {
+    if (cursor.toString() === itemId) return true;
+    const parent = await Item.findById(cursor).select("parentId");
+    cursor = parent?.parentId ?? null;
+  }
+  return false;
+}
+
 router.post("/", isInfoSupplied("body", "name", "type"), async (req, res) => {
   const { name, type, content, parentId } = req.body;
   if (type !== "folder" && type !== "text") {
@@ -83,6 +93,11 @@ router.patch(
       );
       if ("error" in resolved) {
         return res.status(BAD_REQUEST).json({ error: resolved.error });
+      }
+      if (await createsCycle(item._id.toString(), resolved.parentId)) {
+        return res
+          .status(BAD_REQUEST)
+          .json({ error: "Can't move a folder inside itself" });
       }
       item.parentId = resolved.parentId;
     }
