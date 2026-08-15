@@ -7,6 +7,8 @@ export type GraphNode = {
   name: string;
   x: number;
   y: number;
+  imageUrl?: string;
+  refs?: string[];
 };
 
 export type ItemDocument = {
@@ -26,6 +28,8 @@ const graphNodeSchema = new Schema<GraphNode>(
     name: { type: String, required: true },
     x: { type: Number, required: true },
     y: { type: Number, required: true },
+    imageUrl: { type: String },
+    refs: { type: [String], default: undefined },
   },
   { _id: false }
 );

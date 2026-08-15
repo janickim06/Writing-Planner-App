@@ -17,6 +17,8 @@ export type GraphNode = {
   name: string;
   x: number;
   y: number;
+  imageUrl?: string;
+  refs?: string[];
 };
 
 export type Item = {

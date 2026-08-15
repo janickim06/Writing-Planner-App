@@ -6,7 +6,7 @@ import {
   loadOwnedItem,
   requireAuth,
 } from "./middleware";
-import Item, { ItemType } from "./models/Item";
+import Item, { GraphNode, ItemType } from "./models/Item";
 import { BAD_REQUEST, CREATED, OK } from "./util";
 
 const router = express.Router();
@@ -43,15 +43,31 @@ async function createsCycle(itemId: string, newParentId: Types.ObjectId | null) 
 
 function parseNodes(value: unknown) {
   if (!Array.isArray(value)) return undefined;
-  const nodes = [];
+  const nodes: GraphNode[] = [];
   for (const raw of value) {
     if (!raw || typeof raw !== "object") return undefined;
-    const { id, name, x, y } = raw as Record<string, unknown>;
+    const { id, name, x, y, imageUrl, refs } = raw as Record<string, unknown>;
     if (typeof id !== "string" || !id) return undefined;
     if (typeof name !== "string") return undefined;
     if (typeof x !== "number" || !Number.isFinite(x)) return undefined;
     if (typeof y !== "number" || !Number.isFinite(y)) return undefined;
-    nodes.push({ id, name, x, y });
+
+    const node: GraphNode = { id, name, x, y };
+
+    if (imageUrl !== undefined && imageUrl !== "") {
+      if (typeof imageUrl !== "string") return undefined;
+      if (!/^https?:\/\//i.test(imageUrl)) return undefined;
+      node.imageUrl = imageUrl;
+    }
+
+    if (refs !== undefined) {
+      if (!Array.isArray(refs)) return undefined;
+      if (refs.some((r) => typeof r !== "string" || !Types.ObjectId.isValid(r)))
+        return undefined;
+      if (refs.length) node.refs = refs as string[];
+    }
+
+    nodes.push(node);
   }
   return nodes;
 }
@@ -106,6 +122,18 @@ router.patch(
       const parsed = parseNodes(nodes);
       if (!parsed) {
         return res.status(BAD_REQUEST).json({ error: "Malformed nodes" });
+      }
+      const refIds = [...new Set(parsed.flatMap((node) => node.refs ?? []))];
+      if (refIds.length) {
+        const owned = await Item.countDocuments({
+          _id: { $in: refIds },
+          ownerId: req.session.userId,
+        });
+        if (owned !== refIds.length) {
+          return res
+            .status(BAD_REQUEST)
+            .json({ error: "References must point to your own files" });
+        }
       }
       item.nodes = parsed;
     }
