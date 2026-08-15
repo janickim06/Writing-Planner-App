@@ -10,7 +10,14 @@ export type User = {
   avatarUrl?: string;
 };
 
-export type ItemType = "folder" | "text";
+export type ItemType = "folder" | "text" | "graph";
+
+export type GraphNode = {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+};
 
 export type Item = {
   _id: string;
@@ -19,6 +26,7 @@ export type Item = {
   name: string;
   parentId: string | null;
   content?: string;
+  nodes?: GraphNode[];
   createdAt: string;
   updatedAt: string;
 };

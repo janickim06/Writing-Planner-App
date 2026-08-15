@@ -5,6 +5,7 @@ import {
   edit as editIcon,
   file as fileIcon,
   folder as folderIcon,
+  share as graphIcon,
 } from "@adamjanicki/ui/icons";
 import { useRef, useState } from "react";
 import useAlert from "src/hooks/useAlert";
@@ -197,7 +198,13 @@ export default function FileTree({
                 <Icon
                   size="s"
                   icon={
-                    isFolder ? (isOpen ? chevronDown : chevronRight) : fileIcon
+                    isFolder
+                      ? isOpen
+                        ? chevronDown
+                        : chevronRight
+                      : item.type === "graph"
+                        ? graphIcon
+                        : fileIcon
                   }
                 />
                 {isFolder && <Icon size="s" icon={folderIcon} />}

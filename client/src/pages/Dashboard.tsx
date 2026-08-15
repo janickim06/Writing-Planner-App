@@ -9,6 +9,7 @@ import {
 import { logout as logoutIcon, plus } from "@adamjanicki/ui/icons";
 import { useCallback, useEffect, useState } from "react";
 import FileTree from "src/components/FileTree";
+import GraphEditor from "src/components/GraphEditor";
 import TextEditor from "src/components/TextEditor";
 import useItems from "src/hooks/useItems";
 import useUser from "src/hooks/useUser";
@@ -33,7 +34,7 @@ export default function Dashboard() {
     : undefined;
 
   useEffect(() => {
-    if (activeItem?.type === "text") {
+    if (activeItem && activeItem.type !== "folder") {
       window.localStorage.setItem(LAST_ITEM_KEY, activeItem._id);
     }
   }, [activeItem]);
@@ -53,7 +54,11 @@ export default function Dashboard() {
       await createItem(name, "folder", selectedFolderId);
       return;
     }
-    const created = await createItem("Untitled", "text", selectedFolderId);
+    const created = await createItem(
+      type === "graph" ? "Untitled graph" : "Untitled",
+      type,
+      selectedFolderId
+    );
     if (created) guardedNavigate(`/app/${created._id}`);
   };
 
@@ -71,6 +76,13 @@ export default function Dashboard() {
         <div className="sidebar-actions">
           <Button size="small" onClick={() => handleCreate("text")}>
             <Icon size="s" icon={plus} /> File
+          </Button>
+          <Button
+            size="small"
+            variant="secondary"
+            onClick={() => handleCreate("graph")}
+          >
+            <Icon size="s" icon={plus} /> Graph
           </Button>
           <Button
             size="small"
@@ -129,7 +141,7 @@ export default function Dashboard() {
           </div>
         );
       }
-      if (activeItem.type !== "text") {
+      if (activeItem.type === "folder") {
         return (
           <div className="main-placeholder">
             <ui.p vfx={{ color: "muted" }}>
@@ -137,6 +149,15 @@ export default function Dashboard() {
               it to start writing.
             </ui.p>
           </div>
+        );
+      }
+      if (activeItem.type === "graph") {
+        return (
+          <GraphEditor
+            key={activeItem._id}
+            item={activeItem}
+            onDirtyChange={setDirty}
+          />
         );
       }
       return (
@@ -150,7 +171,7 @@ export default function Dashboard() {
 
     const lastId = window.localStorage.getItem(LAST_ITEM_KEY);
     const lastItem = lastId
-      ? items.find((item) => item._id === lastId && item.type === "text")
+      ? items.find((item) => item._id === lastId && item.type !== "folder")
       : undefined;
 
     return (

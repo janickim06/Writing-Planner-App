@@ -41,12 +41,27 @@ async function createsCycle(itemId: string, newParentId: Types.ObjectId | null) 
   return false;
 }
 
+function parseNodes(value: unknown) {
+  if (!Array.isArray(value)) return undefined;
+  const nodes = [];
+  for (const raw of value) {
+    if (!raw || typeof raw !== "object") return undefined;
+    const { id, name, x, y } = raw as Record<string, unknown>;
+    if (typeof id !== "string" || !id) return undefined;
+    if (typeof name !== "string") return undefined;
+    if (typeof x !== "number" || !Number.isFinite(x)) return undefined;
+    if (typeof y !== "number" || !Number.isFinite(y)) return undefined;
+    nodes.push({ id, name, x, y });
+  }
+  return nodes;
+}
+
 router.post("/", isInfoSupplied("body", "name", "type"), async (req, res) => {
   const { name, type, content, parentId } = req.body;
-  if (type !== "folder" && type !== "text") {
+  if (type !== "folder" && type !== "text" && type !== "graph") {
     return res
       .status(BAD_REQUEST)
-      .json({ error: "type must be 'folder' or 'text'" });
+      .json({ error: "type must be 'folder', 'text' or 'graph'" });
   }
 
   const resolved = await resolveParentId(req.session.userId as string, parentId);
@@ -60,6 +75,7 @@ router.post("/", isInfoSupplied("body", "name", "type"), async (req, res) => {
     name,
     parentId: resolved.parentId,
     content: type === "text" ? content : undefined,
+    nodes: type === "graph" ? [] : undefined,
   });
   return res.status(CREATED).json({ data: item });
 });
@@ -82,10 +98,17 @@ router.patch(
   loadOwnedItem,
   async (req, res) => {
     const item = res.locals.item;
-    const { name, content, parentId } = req.body;
+    const { name, content, parentId, nodes } = req.body;
 
     if (name !== undefined) item.name = name;
     if (content !== undefined && item.type === "text") item.content = content;
+    if (nodes !== undefined && item.type === "graph") {
+      const parsed = parseNodes(nodes);
+      if (!parsed) {
+        return res.status(BAD_REQUEST).json({ error: "Malformed nodes" });
+      }
+      item.nodes = parsed;
+    }
     if (parentId !== undefined) {
       const resolved = await resolveParentId(
         req.session.userId as string,
