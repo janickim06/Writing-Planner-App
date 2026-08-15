@@ -235,6 +235,55 @@ body {
   background: none;
 }
 
+.graph-scroll {
+  flex: 1;
+  overflow: auto;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--paper-sunken) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-sunken) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.graph-canvas {
+  display: block;
+  touch-action: none;
+}
+
+.graph-node {
+  cursor: grab;
+}
+
+.graph-node.dragging {
+  cursor: grabbing;
+}
+
+.graph-node circle {
+  fill: var(--accent-wash);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.graph-node:hover circle {
+  fill: var(--paper-sunken);
+}
+
+.graph-node text {
+  fill: var(--ink);
+  font-family: inherit;
+  font-weight: 600;
+  user-select: none;
+  pointer-events: none;
+}
+
+.graph-empty {
+  padding: 16px 24px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  border-top: 1px solid var(--rule);
+}
+
 .main-placeholder {
   flex: 1;
   display: flex;
