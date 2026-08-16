@@ -74,22 +74,28 @@ export default function Dashboard() {
       <aside className="app-sidebar">
         <div className="sidebar-header">Orchard</div>
         <div className="sidebar-actions">
-          <Button size="small" onClick={() => handleCreate("text")}>
-            <Icon size="s" icon={plus} /> File
+          <Button
+            vfx={{ axis: "x", align: "center", gap: "xs" }}
+            size="small"
+            onClick={() => handleCreate("text")}
+          >
+            <Icon size="xs" icon={plus} /> File
           </Button>
           <Button
+            vfx={{ axis: "x", align: "center", gap: "xs" }}
             size="small"
             variant="secondary"
             onClick={() => handleCreate("graph")}
           >
-            <Icon size="s" icon={plus} /> Graph
+            <Icon size="xs" icon={plus} /> Graph
           </Button>
           <Button
+            vfx={{ axis: "x", align: "center", gap: "xs" }}
             size="small"
             variant="secondary"
             onClick={() => handleCreate("folder")}
           >
-            <Icon size="s" icon={plus} /> Folder
+            <Icon size="xs" icon={plus} /> Folder
           </Button>
         </div>
         <div className="sidebar-tree">

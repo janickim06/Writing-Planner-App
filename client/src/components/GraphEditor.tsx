@@ -26,11 +26,18 @@ function fitLabel(name: string, maxChars: number) {
   return `${name.slice(0, Math.max(1, maxChars - 1))}…`;
 }
 
-const INSIDE_CHARS = Math.floor((NODE_RADIUS * 1.55) / (LABEL_FONT_SIZE * 0.55));
+const INSIDE_CHARS = Math.floor(
+  (NODE_RADIUS * 1.55) / (LABEL_FONT_SIZE * 0.55)
+);
 const BELOW_CHARS = INSIDE_CHARS + 6;
 
 type Menu = { kind: "node" | "edge"; id: string; x: number; y: number };
-type PendingEdge = { id: string | null; from: string; to: string; label: string };
+type PendingEdge = {
+  id: string | null;
+  from: string;
+  to: string;
+  label: string;
+};
 
 export default function GraphEditor({ item, onDirtyChange }: Props) {
   const [{ items }, { updateItem }] = useItems();
@@ -103,8 +110,7 @@ export default function GraphEditor({ item, onDirtyChange }: Props) {
 
   const areConnected = (a: string, b: string) =>
     edges.some(
-      (e) =>
-        (e.from === a && e.to === b) || (e.from === b && e.to === a)
+      (e) => (e.from === a && e.to === b) || (e.from === b && e.to === a)
     );
 
   const addNode = () => {
@@ -177,8 +183,13 @@ export default function GraphEditor({ item, onDirtyChange }: Props) {
           aria-label="Graph name"
           onChange={(e) => setName(e.target.value)}
         />
-        <Button size="small" variant="secondary" onClick={addNode}>
-          <Icon size="s" icon={plus} /> Node
+        <Button
+          size="small"
+          variant="secondary"
+          onClick={addNode}
+          vfx={{ axis: "x", align: "center", gap: "xs" }}
+        >
+          <Icon size="xs" icon={plus} /> Node
         </Button>
         <Button
           size="small"
@@ -405,7 +416,9 @@ export default function GraphEditor({ item, onDirtyChange }: Props) {
                       className="graph-menu-item danger"
                       role="menuitem"
                       onClick={() => {
-                        setEdges((prev) => prev.filter((e) => e.id !== menu.id));
+                        setEdges((prev) =>
+                          prev.filter((e) => e.id !== menu.id)
+                        );
                         setMenu(null);
                       }}
                     >
