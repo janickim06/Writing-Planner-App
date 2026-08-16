@@ -11,6 +11,13 @@ export type GraphNode = {
   refs?: string[];
 };
 
+export type GraphEdge = {
+  id: string;
+  from: string;
+  to: string;
+  label?: string;
+};
+
 export type ItemDocument = {
   ownerId: Types.ObjectId;
   type: ItemType;
@@ -18,6 +25,7 @@ export type ItemDocument = {
   parentId: Types.ObjectId | null;
   content?: string;
   nodes?: GraphNode[];
+  edges?: GraphEdge[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -30,6 +38,16 @@ const graphNodeSchema = new Schema<GraphNode>(
     y: { type: Number, required: true },
     imageUrl: { type: String },
     refs: { type: [String], default: undefined },
+  },
+  { _id: false }
+);
+
+const graphEdgeSchema = new Schema<GraphEdge>(
+  {
+    id: { type: String, required: true },
+    from: { type: String, required: true },
+    to: { type: String, required: true },
+    label: { type: String },
   },
   { _id: false }
 );
@@ -47,6 +65,7 @@ const itemSchema = new Schema<ItemDocument>(
     parentId: { type: Schema.Types.ObjectId, ref: "Item", default: null },
     content: { type: String },
     nodes: { type: [graphNodeSchema], default: undefined },
+    edges: { type: [graphEdgeSchema], default: undefined },
   },
   { timestamps: true }
 );

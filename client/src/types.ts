@@ -21,6 +21,13 @@ export type GraphNode = {
   refs?: string[];
 };
 
+export type GraphEdge = {
+  id: string;
+  from: string;
+  to: string;
+  label?: string;
+};
+
 export type Item = {
   _id: string;
   ownerId: string;
@@ -29,6 +36,7 @@ export type Item = {
   parentId: string | null;
   content?: string;
   nodes?: GraphNode[];
+  edges?: GraphEdge[];
   createdAt: string;
   updatedAt: string;
 };

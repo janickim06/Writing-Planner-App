@@ -6,7 +6,7 @@ import {
   loadOwnedItem,
   requireAuth,
 } from "./middleware";
-import Item, { GraphNode, ItemType } from "./models/Item";
+import Item, { GraphEdge, GraphNode, ItemType } from "./models/Item";
 import { BAD_REQUEST, CREATED, OK } from "./util";
 
 const router = express.Router();
@@ -72,6 +72,27 @@ function parseNodes(value: unknown) {
   return nodes;
 }
 
+function parseEdges(value: unknown, nodeIds: Set<string>) {
+  if (!Array.isArray(value)) return undefined;
+  const edges: GraphEdge[] = [];
+  for (const raw of value) {
+    if (!raw || typeof raw !== "object") return undefined;
+    const { id, from, to, label } = raw as Record<string, unknown>;
+    if (typeof id !== "string" || !id) return undefined;
+    if (typeof from !== "string" || !nodeIds.has(from)) return undefined;
+    if (typeof to !== "string" || !nodeIds.has(to)) return undefined;
+    if (from === to) return undefined;
+
+    const edge: GraphEdge = { id, from, to };
+    if (label !== undefined) {
+      if (typeof label !== "string") return undefined;
+      if (label) edge.label = label;
+    }
+    edges.push(edge);
+  }
+  return edges;
+}
+
 router.post("/", isInfoSupplied("body", "name", "type"), async (req, res) => {
   const { name, type, content, parentId } = req.body;
   if (type !== "folder" && type !== "text" && type !== "graph") {
@@ -92,6 +113,7 @@ router.post("/", isInfoSupplied("body", "name", "type"), async (req, res) => {
     parentId: resolved.parentId,
     content: type === "text" ? content : undefined,
     nodes: type === "graph" ? [] : undefined,
+    edges: type === "graph" ? [] : undefined,
   });
   return res.status(CREATED).json({ data: item });
 });
@@ -114,7 +136,7 @@ router.patch(
   loadOwnedItem,
   async (req, res) => {
     const item = res.locals.item;
-    const { name, content, parentId, nodes } = req.body;
+    const { name, content, parentId, nodes, edges } = req.body;
 
     if (name !== undefined) item.name = name;
     if (content !== undefined && item.type === "text") item.content = content;
@@ -136,6 +158,15 @@ router.patch(
         }
       }
       item.nodes = parsed;
+    }
+    if (edges !== undefined && item.type === "graph") {
+      const currentNodes: GraphNode[] = item.nodes ?? [];
+      const nodeIds = new Set(currentNodes.map((node) => node.id));
+      const parsed = parseEdges(edges, nodeIds);
+      if (!parsed) {
+        return res.status(BAD_REQUEST).json({ error: "Malformed connections" });
+      }
+      item.edges = parsed;
     }
     if (parentId !== undefined) {
       const resolved = await resolveParentId(

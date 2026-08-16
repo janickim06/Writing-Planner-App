@@ -254,6 +254,58 @@ body {
   touch-action: none;
 }
 
+.graph-edge .edge-line {
+  stroke: var(--ink-muted);
+  stroke-width: 2;
+}
+
+.graph-edge .edge-hit {
+  stroke: transparent;
+  stroke-width: 16;
+  cursor: context-menu;
+}
+
+.graph-edge:hover .edge-line {
+  stroke: var(--accent);
+}
+
+.graph-edge .edge-label {
+  fill: var(--ink);
+  font-family: inherit;
+  font-weight: 600;
+  user-select: none;
+  pointer-events: none;
+  stroke: var(--paper);
+  stroke-width: 4;
+  paint-order: stroke fill;
+}
+
+.graph-canvas.connecting {
+  cursor: crosshair;
+}
+
+.graph-node.connect-source circle {
+  stroke-dasharray: 5 4;
+}
+
+.graph-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background-color: var(--accent-wash);
+  border-top: 1px solid var(--accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.graph-banner-hint {
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
 .graph-node {
   cursor: grab;
 }
