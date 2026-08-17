@@ -9,3 +9,34 @@ export type User = {
   name: string;
   avatarUrl?: string;
 };
+
+export type ItemType = "folder" | "text" | "graph";
+
+export type GraphNode = {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  imageUrl?: string;
+  refs?: string[];
+};
+
+export type GraphEdge = {
+  id: string;
+  from: string;
+  to: string;
+  label?: string;
+};
+
+export type Item = {
+  _id: string;
+  ownerId: string;
+  type: ItemType;
+  name: string;
+  parentId: string | null;
+  content?: string;
+  nodes?: GraphNode[];
+  edges?: GraphEdge[];
+  createdAt: string;
+  updatedAt: string;
+};

@@ -43,7 +43,7 @@ export default function GoogleLoginButton() {
           return;
         }
         login(data);
-        navigate("/");
+        navigate("/app/");
       },
     });
     window.google.accounts.id.renderButton(buttonRef.current, {
